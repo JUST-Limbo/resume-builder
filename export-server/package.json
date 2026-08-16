@@ -1,0 +1,16 @@
+{
+  "name": "resume-export-server",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "本机 Playwright 矢量 PDF 导出服务（仅监听 localhost）",
+  "scripts": {
+    "start": "node index.mjs",
+    "postinstall": "playwright install chromium"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "playwright": "^1.51.0",
+    "resume-builder": "file:.."
+  }
+}

@@ -1,5 +1,14 @@
 <script setup lang="ts">
 import { RotateCcw } from 'lucide-vue-next'
+import { Button } from './ui/button'
+import { Label } from './ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select'
 import type { ResumeStyles } from '../types/resume'
 
 defineProps<{
@@ -19,36 +28,54 @@ const numberValue = (event: Event) => {
 
 const stringValue = (event: Event) => {
   const target = event.target
-  if (!(target instanceof HTMLInputElement) && !(target instanceof HTMLSelectElement)) return ''
+  if (!(target instanceof HTMLInputElement)) return ''
   return target.value
+}
+
+const onFontPreset = (value: unknown) => {
+  if (typeof value !== 'string') return
+  emit('update', 'fontPreset', value as ResumeStyles['fontPreset'])
+}
+
+const onNameAlignment = (value: unknown) => {
+  if (typeof value !== 'string') return
+  emit('update', 'nameAlignment', value as ResumeStyles['nameAlignment'])
 }
 </script>
 
 <template>
   <aside class="style-panel">
     <div class="style-panel__header">
-      <div>
-        <p class="eyebrow">DESIGN</p>
+      <div class="style-panel__title">
         <h2>样式设置</h2>
+        <p class="eyebrow">DESIGN</p>
       </div>
-      <button class="icon-button" type="button" title="恢复默认样式" @click="emit('reset')">
+      <Button
+        type="button"
+        size="icon-sm"
+        variant="outline"
+        title="恢复到当前模板样式（无模板则用默认）"
+        @click="emit('reset')"
+      >
         <RotateCcw :size="17" />
-      </button>
+      </Button>
     </div>
 
     <section class="control-group">
       <h3>排版</h3>
-      <label class="field">
-        <span>字体组合</span>
-        <select
-          :value="styles.fontPreset"
-          @change="emit('update', 'fontPreset', stringValue($event) as ResumeStyles['fontPreset'])"
-        >
-          <option value="system">现代无衬线</option>
-          <option value="modern">Inter / 思源黑体</option>
-          <option value="serif">中文衬线</option>
-        </select>
-      </label>
+      <div class="field">
+        <Label>字体组合</Label>
+        <Select :model-value="styles.fontPreset" @update:model-value="onFontPreset">
+          <SelectTrigger class="h-9 w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent position="popper" class="z-[80]">
+            <SelectItem value="system">系统无衬线</SelectItem>
+            <SelectItem value="modern">Inter / Noto Sans</SelectItem>
+            <SelectItem value="serif">Noto 衬线</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
       <label class="field field--range">
         <span>正文字号 <b>{{ styles.baseFontSize.toFixed(1) }} pt</b></span>
@@ -74,16 +101,18 @@ const stringValue = (event: Event) => {
         />
       </label>
 
-      <label class="field">
-        <span>姓名对齐</span>
-        <select
-          :value="styles.nameAlignment"
-          @change="emit('update', 'nameAlignment', stringValue($event) as ResumeStyles['nameAlignment'])"
-        >
-          <option value="left">左对齐</option>
-          <option value="center">居中</option>
-        </select>
-      </label>
+      <div class="field">
+        <Label>姓名对齐</Label>
+        <Select :model-value="styles.nameAlignment" @update:model-value="onNameAlignment">
+          <SelectTrigger class="h-9 w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent position="popper" class="z-[80]">
+            <SelectItem value="left">左对齐</SelectItem>
+            <SelectItem value="center">居中</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
     </section>
 
     <section class="control-group">
@@ -183,8 +212,9 @@ const stringValue = (event: Event) => {
 
 <style scoped>
 .style-panel {
-  height: 100%;
-  overflow-y: auto;
+  /* 滚动由外层 .style-drawer__panel 统一承担，避免双层滚动 */
+  height: auto;
+  overflow: visible;
   padding: 22px 20px 28px;
   background: #fbfbfa;
   border-left: 1px solid var(--line);
@@ -192,34 +222,29 @@ const stringValue = (event: Event) => {
 
 .style-panel__header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   margin-bottom: 24px;
 }
 
+.style-panel__title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
 .style-panel__header h2 {
-  margin: 2px 0 0;
-  font-size: 18px;
+  margin: 0;
+  font-size: 16px;
 }
 
 .eyebrow {
   margin: 0;
-  color: var(--muted);
+  color: #7b8388;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.18em;
-}
-
-.icon-button {
-  display: grid;
-  width: 32px;
-  height: 32px;
-  place-items: center;
-  color: #4e555a;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  cursor: pointer;
 }
 
 .control-group {
@@ -251,19 +276,10 @@ const stringValue = (event: Event) => {
   font-weight: 600;
 }
 
-.field select {
-  width: 100%;
-  height: 36px;
-  padding: 0 10px;
-  color: #30363a;
-  background: #fff;
-  border: 1px solid #dfe2e3;
-  border-radius: 7px;
-}
-
 .field input[type='range'] {
   width: 100%;
   accent-color: #202428;
+  cursor: pointer;
 }
 
 .color-grid {
@@ -287,5 +303,6 @@ const stringValue = (event: Event) => {
   background: #fff;
   border: 1px solid #dfe2e3;
   border-radius: 7px;
+  cursor: pointer;
 }
 </style>

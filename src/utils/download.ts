@@ -1,12 +1,11 @@
 /**
- * 下载浏览器内生成的文本文件。
+ * 触发浏览器下载任意 Blob（文本 / PDF 等）。
  *
  * 用例：
- * - exportTextFile('resume.md', markdown, 'text/markdown;charset=utf-8')
- * - exportTextFile('resume.resume.json', json, 'application/json;charset=utf-8')
+ * - exportBlobFile('a.md', new Blob([md], { type: 'text/markdown;charset=utf-8' }))
+ * - exportBlobFile('a.pdf', pdfBlob)
  */
-export const exportTextFile = (filename: string, content: string, mimeType: string) => {
-  const blob = new Blob([content], { type: mimeType })
+export const exportBlobFile = (filename: string, blob: Blob) => {
   const url = URL.createObjectURL(blob)
   const anchor = document.createElement('a')
   anchor.href = url
@@ -15,6 +14,17 @@ export const exportTextFile = (filename: string, content: string, mimeType: stri
   anchor.click()
   document.body.removeChild(anchor)
   URL.revokeObjectURL(url)
+}
+
+/**
+ * 下载浏览器内生成的文本文件。
+ *
+ * 用例：
+ * - exportTextFile('resume.md', markdown, 'text/markdown;charset=utf-8')
+ * - exportTextFile('resume.resume.json', json, 'application/json;charset=utf-8')
+ */
+export const exportTextFile = (filename: string, content: string, mimeType: string) => {
+  exportBlobFile(filename, new Blob([content], { type: mimeType }))
 }
 
 /**

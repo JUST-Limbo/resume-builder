@@ -60,11 +60,19 @@ export const renderResumeMarkdown = (source: string) => {
 
   const nameHeading = container.querySelector('h1')
   if (nameHeading !== null) {
+    nameHeading.classList.add('resume-name')
     let sibling = nameHeading.nextElementSibling
     while (sibling !== null && sibling.tagName !== 'H2') {
       sibling.classList.add('resume-profile-line')
       sibling = sibling.nextElementSibling
     }
+  }
+
+  for (const heading of Array.from(container.querySelectorAll('h2'))) {
+    heading.classList.add('resume-section')
+  }
+  for (const heading of Array.from(container.querySelectorAll('h3'))) {
+    heading.classList.add('resume-entry')
   }
 
   for (const anchor of Array.from(container.querySelectorAll('a'))) {
