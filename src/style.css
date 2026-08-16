@@ -457,11 +457,6 @@ body.is-pane-resizing iframe {
   border-color: #fff;
 }
 
-.toolbar .button-zen {
-  border-color: #cfd6da;
-  background: #f4f7f8;
-}
-
 .toolbar button.is-open {
   color: #202428;
   background: #eef0f1;
@@ -589,6 +584,33 @@ body.is-pane-resizing iframe {
 .pane-header__style.button-attention {
   border-color: #e2b48a;
   background: #fff8f1;
+}
+
+.pane-header__zen {
+  display: inline-flex;
+  flex-shrink: 0;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 7px;
+  color: #444b50;
+  background: #f4f7f8;
+  border: 1px solid #cfd6da;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pane-header__zen:hover {
+  background: #eef0f1;
+  border-color: #c4c8cc;
+}
+
+.pane-header__zen:focus-visible {
+  outline: 2px solid #9aa1a6;
+  outline-offset: 1px;
 }
 
 .effect-hint-dialog .effect-hint-body {

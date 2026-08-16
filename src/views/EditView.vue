@@ -703,16 +703,6 @@ onBeforeUnmount(() => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <button
-          type="button"
-          class="button-zen"
-          title="禅模式（Ctrl/⌘+Shift+E）"
-          aria-label="禅模式"
-          @click="enterZenMode"
-        >
-          <Focus :size="17" />
-          <span>禅</span>
-        </button>
       </nav>
     </header>
 
@@ -843,6 +833,16 @@ onBeforeUnmount(() => {
             >
               <PanelRight :size="14" />
               <span>样式</span>
+            </button>
+            <button
+              type="button"
+              class="pane-header__zen"
+              title="禅模式（Ctrl/⌘+Shift+E）"
+              aria-label="禅模式"
+              @click="enterZenMode"
+            >
+              <Focus :size="14" />
+              <span>禅</span>
             </button>
           </div>
         </div>
