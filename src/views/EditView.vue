@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
+import { driver, type Driver } from 'driver.js'
+import 'driver.js/dist/driver.css'
 import {
   AlertCircle,
   Check,
@@ -76,6 +78,7 @@ const zenSnapshot = ref<{
 
 /** 左中右栏宽（px）；中间效果栏吃剩余空间 */
 const PANE_STORAGE_KEY = 'resume-builder:workspace-panes'
+const EDIT_TOUR_STORAGE_KEY = 'resume-builder:edit-tour-v1'
 const PANE_HANDLE_PX = 5
 const MIN_SOURCE_PANE = 220
 const MIN_EFFECT_PANE = 280
@@ -457,6 +460,123 @@ const exitZenMode = () => {
   }
 }
 
+let editTour: Driver | null = null
+let editTourTimer: number | null = null
+
+const rememberEditTour = () => {
+  try {
+    window.localStorage.setItem(EDIT_TOUR_STORAGE_KEY, 'seen')
+  } catch {
+    // 隐私模式下无法写入时，不影响本次向导使用。
+  }
+}
+
+const hasSeenEditTour = () => {
+  try {
+    return window.localStorage.getItem(EDIT_TOUR_STORAGE_KEY) === 'seen'
+  } catch {
+    return false
+  }
+}
+
+const startEditTour = async () => {
+  if (store.document === null) return
+  if (editTour !== null) editTour.destroy()
+  if (zenMode.value) exitZenMode()
+  openStyleDrawer()
+  await nextTick()
+
+  editTour = driver({
+    animate: true,
+    smoothScroll: true,
+    allowClose: true,
+    overlayColor: '#111827',
+    overlayOpacity: 0.68,
+    stagePadding: 7,
+    stageRadius: 10,
+    popoverClass: 'resume-edit-tour',
+    popoverOffset: 12,
+    showProgress: true,
+    progressText: '{{current}} / {{total}}',
+    nextBtnText: '下一步',
+    prevBtnText: '上一步',
+    doneBtnText: '开始编辑',
+    onDestroyed: () => {
+      effectHintOpen.value = false
+      rememberEditTour()
+      editTour = null
+    },
+    steps: [
+      {
+        element: '[data-edit-tour="source"]',
+        popover: {
+          title: '左栏 · Markdown 源码',
+          description: '适合批量整理简历内容；支持标题、列表、加粗，以及双栏和手动分页等扩展写法。',
+          side: 'right',
+          align: 'start',
+        },
+      },
+      {
+        element: '[data-edit-tour="effect"]',
+        popover: {
+          title: '中栏 · 效果编辑',
+          description: '可以在接近成稿的界面中直接修改内容，并实时观察最终 A4 页面的分页效果。',
+          side: 'left',
+          align: 'start',
+        },
+      },
+      {
+        element: '[data-edit-tour="styles"]',
+        popover: {
+          title: '右栏 · 模板与样式',
+          description: '集中调整模板、字体、字号、间距、颜色和 Custom CSS，不会污染 Markdown 正文。',
+          side: 'left',
+          align: 'start',
+        },
+      },
+      {
+        element: '[data-edit-tour="syntax-help"]',
+        popover: {
+          title: '查看全部写法',
+          description: '这里汇总了效果区快捷键、双栏布局、手动分页和特殊内容块的编辑约定。',
+          side: 'bottom',
+          align: 'end',
+          onNextClick: async (_element, _step, options) => {
+            effectHintOpen.value = true
+            await nextTick()
+            options.driver.moveNext()
+          },
+        },
+      },
+      {
+        element: '.effect-hint-dialog',
+        waitForElement: 1200,
+        popover: {
+          title: '写法说明弹窗',
+          description: '遇到快捷键、双栏、分页或特殊块问题时，可随时从这个弹窗查阅完整规则。',
+          side: 'left',
+          align: 'center',
+          onPrevClick: async (_element, _step, options) => {
+            effectHintOpen.value = false
+            await nextTick()
+            options.driver.movePrevious()
+          },
+        },
+      },
+    ],
+  })
+  editTour.drive()
+}
+
+const scheduleFirstEditTour = () => {
+  if (hasSeenEditTour() || editTourTimer !== null) return
+  editTourTimer = window.setTimeout(() => {
+    editTourTimer = null
+    if (store.document === null) return
+    void startEditTour()
+  }, 500)
+}
+
 const toggleZenMode = () => {
   if (zenMode.value) exitZenMode()
   else enterZenMode()
@@ -539,6 +659,14 @@ watch(
   },
 )
 
+watch(
+  () => ready.value && store.document !== null,
+  (canStart) => {
+    if (canStart) scheduleFirstEditTour()
+  },
+  { flush: 'post' },
+)
+
 const DEFAULT_DOCUMENT_TITLE = 'Resume Builder'
 
 /** 编辑页 tab 标题：有简历时用「标题 · Resume Builder」，否则还原默认。 */
@@ -574,6 +702,11 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  if (editTourTimer !== null) {
+    window.clearTimeout(editTourTimer)
+    editTourTimer = null
+  }
+  if (editTour !== null) editTour.destroy()
   stopPaneResize()
   window.removeEventListener('keydown', onGlobalKeydown)
   store.closeDocument()
@@ -804,7 +937,7 @@ onBeforeUnmount(() => {
       }"
       :style="workspacePaneStyle"
     >
-      <section v-show="!zenMode" class="source-pane">
+      <section v-show="!zenMode" class="source-pane" data-edit-tour="source">
         <div class="pane-header">
           <span>Markdown 源码</span>
           <span class="pane-header__hint">Ctrl/⌘+1~6 / B / I</span>
@@ -830,7 +963,7 @@ onBeforeUnmount(() => {
         @pointerdown="startPaneResize('source', $event)"
       />
 
-      <section class="effect-pane">
+      <section class="effect-pane" data-edit-tour="effect">
         <div v-if="!zenMode" class="pane-header">
           <span>效果编辑</span>
           <div class="pane-header__trailing">
@@ -839,6 +972,7 @@ onBeforeUnmount(() => {
               <button
                 type="button"
                 class="pane-header__info"
+                data-edit-tour="syntax-help"
                 title="查看全部写法"
                 aria-label="查看全部写法"
                 @click="effectHintOpen = true"
@@ -907,7 +1041,12 @@ onBeforeUnmount(() => {
         @pointerdown="startPaneResize('style', $event)"
       />
 
-      <aside v-if="styleDrawerOpen" class="style-drawer" aria-label="样式、模板与 Custom CSS">
+      <aside
+        v-if="styleDrawerOpen"
+        class="style-drawer"
+        aria-label="样式、模板与 Custom CSS"
+        data-edit-tour="styles"
+      >
         <div class="style-drawer__bar">
           <div class="style-drawer__tabs">
             <button

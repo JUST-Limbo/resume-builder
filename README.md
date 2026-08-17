@@ -2,6 +2,10 @@
 
 本地优先的 Markdown 简历生成器。使用 Vue 3、Vite 和 Monaco Editor 构建，支持实时 A4 分页预览、样式调整、自动优化一页以及浏览器导出 PDF。
 
+## 项目定位
+
+本项目主要用于学习和实践 Monaco Editor、Markdown 在线编辑、实时预览、分页排版与浏览器导出等前端功能。简历编辑与生成能力是上述学习和实验过程中的附属产物。
+
 ## 功能
 
 - Markdown 与 Custom CSS 实时编辑

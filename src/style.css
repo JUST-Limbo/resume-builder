@@ -958,6 +958,63 @@ body.is-pane-resizing iframe {
   }
 }
 
+/* 编辑页首次引导：沿用工作台的中性色与紧凑排版。 */
+.driver-popover.resume-edit-tour {
+  --driver-popover-font-family: "Microsoft YaHei", "Noto Sans SC", Arial, sans-serif;
+  max-width: 330px;
+  padding: 18px;
+  color: #202428;
+  background: #fff;
+  border: 1px solid #dfe3e5;
+  border-radius: 12px;
+  box-shadow: 0 18px 48px rgba(17, 24, 39, 0.22);
+}
+
+.driver-popover.resume-edit-tour .driver-popover-title {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.driver-popover.resume-edit-tour .driver-popover-description {
+  margin-top: 7px;
+  color: #697177;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.driver-popover.resume-edit-tour .driver-popover-progress-text {
+  color: #92999e;
+  font-size: 11px;
+}
+
+.driver-popover.resume-edit-tour .driver-popover-close-btn {
+  color: #92999e;
+}
+
+.driver-popover.resume-edit-tour .driver-popover-footer button {
+  min-width: 62px;
+  height: 30px;
+  padding: 0 11px;
+  color: #4f575c;
+  background: #f6f7f7;
+  border: 1px solid #dfe3e5;
+  border-radius: 7px;
+  text-shadow: none;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.driver-popover.resume-edit-tour .driver-popover-footer .driver-popover-next-btn {
+  color: #fff;
+  background: #202428;
+  border-color: #202428;
+}
+
+.driver-popover.resume-edit-tour .driver-popover-footer button:hover {
+  filter: brightness(0.96);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
