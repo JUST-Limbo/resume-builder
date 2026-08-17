@@ -2,7 +2,12 @@
   "name": "resume-builder",
   "private": true,
   "version": "0.0.0",
+  "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=22.12.0",
+    "npm": ">=10.0.0"
+  },
   "scripts": {
     "dev": "concurrently -n vite,export -c cyan,magenta \"npm:dev:vite\" \"npm:export-server\"",
     "dev:vite": "vite",

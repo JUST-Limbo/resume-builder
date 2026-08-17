@@ -32,11 +32,6 @@ const stringValue = (event: Event) => {
   return target.value
 }
 
-const onFontPreset = (value: unknown) => {
-  if (typeof value !== 'string') return
-  emit('update', 'fontPreset', value as ResumeStyles['fontPreset'])
-}
-
 const onNameAlignment = (value: unknown) => {
   if (typeof value !== 'string') return
   emit('update', 'nameAlignment', value as ResumeStyles['nameAlignment'])
@@ -63,20 +58,6 @@ const onNameAlignment = (value: unknown) => {
 
     <section class="control-group">
       <h3>排版</h3>
-      <div class="field">
-        <Label>字体组合</Label>
-        <Select :model-value="styles.fontPreset" @update:model-value="onFontPreset">
-          <SelectTrigger class="h-9 w-full">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent position="popper" class="z-[80]">
-            <SelectItem value="system">系统无衬线</SelectItem>
-            <SelectItem value="modern">Inter / Noto Sans</SelectItem>
-            <SelectItem value="serif">Noto 衬线</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
       <label class="field field--range">
         <span>正文字号 <b>{{ styles.baseFontSize.toFixed(1) }} pt</b></span>
         <input

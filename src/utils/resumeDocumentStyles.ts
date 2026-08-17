@@ -2,21 +2,16 @@ import type { ResumeStyles } from '../types/resume'
 
 /**
  * 预览 iframe / 打印 / 效果编辑区共用的 web font。
- * Inter + Noto Sans/Serif SC 作主字体；本机雅黑仅作回退，避免预览有雅黑、导出无雅黑时分叉。
+ * 本机优先使用微软雅黑；不可用时由 Noto Sans SC 及系统字体回退。
  */
 export const RESUME_WEB_FONT_STYLESHEET =
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;800&family=Noto+Serif+SC:wght@400;500;700&display=swap'
 
 /**
- * 按预设解析 font-family。
- * Web 字体必须排在本机雅黑/苹方之前：效果编辑区有雅黑、Playwright Chromium 通常没有，
- * 若雅黑优先会导致预览与打印/矢量导出字重、字色与行盒度量全面分叉。
+ * 简历正文使用唯一字体栈，保证效果区、预览、打印与导出读取同一配置。
  */
-export const resumeFontFamilies: Record<ResumeStyles['fontPreset'], string> = {
-  system: "'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', 'Noto Sans CJK SC', Arial, sans-serif",
-  modern: "Inter, 'Noto Sans SC', 'Source Han Sans SC', 'Microsoft YaHei', Arial, sans-serif",
-  serif: "'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', SimSun, serif",
-}
+export const RESUME_FONT_FAMILY =
+  "'Microsoft YaHei', 'Noto Sans SC', 'PingFang SC', 'Noto Sans CJK SC', Arial, sans-serif"
 
 /**
  * 向 document 注入简历 web font stylesheet（幂等）。
@@ -327,7 +322,7 @@ export const buildResumeSurfaceVars = (
   const t = resolveResumeTypography(styles, scale)
   const ruleWidth = resolveResumeRuleWidthCss(styles.dividerWidth)
   return {
-    '--resume-font': resumeFontFamilies[styles.fontPreset],
+    '--resume-font': RESUME_FONT_FAMILY,
     '--resume-text': styles.textColor,
     '--resume-muted': styles.mutedColor,
     '--resume-divider': styles.dividerColor,

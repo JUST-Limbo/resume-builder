@@ -1,6 +1,5 @@
 import { z } from 'zod'
 
-export const fontPresetSchema = z.enum(['system', 'modern', 'serif'])
 export const nameAlignmentSchema = z.enum(['left', 'center'])
 const colorSchema = z.string().regex(/^#[0-9a-fA-F]{6}$/)
 
@@ -11,7 +10,6 @@ export const resumeStylesSchema = z.object({
   lineHeight: z.number().min(1.2).max(1.8),
   sectionGap: z.number().min(4).max(20),
   itemGap: z.number().min(0).max(12),
-  fontPreset: fontPresetSchema,
   nameAlignment: nameAlignmentSchema,
   textColor: colorSchema,
   mutedColor: colorSchema,

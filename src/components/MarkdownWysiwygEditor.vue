@@ -122,7 +122,11 @@ const scheduleSnapSectionRules = () => {
 const refreshVisualPagination = () => {
   const current = editor.value
   if (current === undefined) return
-  const storage = current.storage.resumeVisualPagination as { refresh?: () => void } | undefined
+  const storage = (
+    current.storage as unknown as {
+      resumeVisualPagination?: { refresh?: () => void }
+    }
+  ).resumeVisualPagination
   if (storage !== undefined && typeof storage.refresh === 'function') {
     storage.refresh()
   }
@@ -233,7 +237,6 @@ watch(
       props.autoFitScale,
       props.smartPagination,
       props.styles.baseFontSize,
-      props.styles.fontPreset,
       props.styles.lineHeight,
       props.styles.itemGap,
       props.styles.sectionGap,

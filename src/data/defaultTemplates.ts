@@ -10,7 +10,6 @@ export const classicStyles = (): ResumeStyles => ({
   lineHeight: 1.5,
   sectionGap: 11,
   itemGap: 3,
-  fontPreset: 'system',
   nameAlignment: 'left',
   textColor: '#1a1a1a',
   mutedColor: '#6b7280',

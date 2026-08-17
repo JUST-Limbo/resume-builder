@@ -10,6 +10,7 @@ import {
   FileText,
   Focus,
   Info,
+  Layers3,
   LoaderCircle,
   Maximize2,
   Minimize2,
@@ -21,6 +22,7 @@ import {
   X,
 } from 'lucide-vue-next'
 import ResumePreview from '../components/ResumePreview.vue'
+import ResumeModuleManager from '../components/ResumeModuleManager.vue'
 import StylePanel from '../components/StylePanel.vue'
 import TemplatePanel from '../components/TemplatePanel.vue'
 import {
@@ -191,6 +193,7 @@ const preview = ref<InstanceType<typeof ResumePreview> | null>(null)
 const autoFitRunning = ref(false)
 const exportingPdf = ref(false)
 const effectHintOpen = ref(false)
+const moduleManagerOpen = ref(false)
 const printingPdf = ref(false)
 
 /** 顶栏页数以效果区视觉分页为准；预览引擎仅在自动适应时回写 */
@@ -235,6 +238,11 @@ const showNotice = (type: 'success' | 'warning', text: string) => {
     notice.value = null
     noticeTimer = null
   }, 4200)
+}
+
+const applyModuleChanges = (markdown: string) => {
+  store.updateMarkdown(markdown)
+  showNotice('success', '简历模块已更新。')
 }
 
 const updateStyle = (key: keyof ResumeStyles, value: ResumeStyles[keyof ResumeStyles]) => {
@@ -826,6 +834,15 @@ onBeforeUnmount(() => {
             <button
               type="button"
               class="pane-header__style"
+              title="删除或拖拽调整简历模块顺序"
+              @click="moduleManagerOpen = true"
+            >
+              <Layers3 :size="14" />
+              <span>模块管理</span>
+            </button>
+            <button
+              type="button"
+              class="pane-header__style"
               :class="{ 'button-attention': store.styleDirty, 'is-open': styleDrawerOpen }"
               title="样式、模板与 Custom CSS"
               :aria-pressed="styleDrawerOpen"
@@ -950,6 +967,12 @@ onBeforeUnmount(() => {
         {{ notice.text }}
       </div>
     </Transition>
+
+    <ResumeModuleManager
+      v-model:open="moduleManagerOpen"
+      :markdown="store.document.markdown"
+      @apply="applyModuleChanges"
+    />
 
     <Dialog :open="effectHintOpen" @update:open="effectHintOpen = $event">
       <DialogContent class="effect-hint-dialog sm:max-w-md">

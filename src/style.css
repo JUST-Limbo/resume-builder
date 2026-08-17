@@ -7,7 +7,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  font-family: Inter, "Segoe UI", "Microsoft YaHei", sans-serif;
+  font-family: "Microsoft YaHei", Inter, "Segoe UI", sans-serif;
   color: #202428;
   background: #f1f3f4;
   font-synthesis: none;
