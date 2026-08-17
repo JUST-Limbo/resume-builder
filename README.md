@@ -32,6 +32,14 @@ npm run dev
 
 导出服务默认监听 `http://127.0.0.1:3917`。未执行 `export-server:install`、或 Playwright/Chromium 缺失时，终端里 `[export]` 可能报错退出，不影响前端日常编辑；可用打印另存 / 位图导出作为替代。仅启动前端：`npm run dev:vite`；仅启动导出服务：`npm run export-server`。详见 `export-server/README.md`。
 
+## 在线访问
+
+项目通过 GitHub Actions 构建并发布到 GitHub Pages：
+
+<https://just-limbo.github.io/resume-builder/>
+
+每次向 `main` 分支推送后会自动重新部署。线上版本使用 Hash 路由，简历数据仍只保存在访问者当前浏览器的 IndexedDB 中。GitHub Pages 无法运行本机 Playwright 导出服务，因此线上不显示「PDF（矢量 · 本机服务）」；仍可使用打印另存矢量 PDF 或浏览器位图 PDF。
+
 ## Markdown 约定
 
 ```markdown

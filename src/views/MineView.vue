@@ -40,13 +40,20 @@ import {
 import { useResumeStore } from '../stores/resume'
 import type { ResumeDocumentV1 } from '../types/resume'
 import { exportTextFile, toSafeFilename } from '../utils/download'
-import { exportResumePdf, exportResumePdfViaLocalServer, ExportServerUnavailableError, openResumePrintDialog } from '../utils/exportResumePdf'
+import {
+  canUseLocalExportServer,
+  exportResumePdf,
+  exportResumePdfViaLocalServer,
+  ExportServerUnavailableError,
+  openResumePrintDialog,
+} from '../utils/exportResumePdf'
 
 /** Reka Select 不允许空字符串 value */
 const TEMPLATE_NONE = '__none__'
 
 const router = useRouter()
 const store = useResumeStore()
+const localExportAvailable = canUseLocalExportServer()
 
 const newTitle = ref('')
 /** 仅用于「新增简历」，与模板库浏览互不联动 */
@@ -313,6 +320,7 @@ onMounted(async () => {
                     Markdown（.md）
                   </DropdownMenuItem>
                   <DropdownMenuItem
+                    v-if="localExportAvailable"
                     :disabled="exportingId !== null"
                     @select="() => exportPdfVectorLocal(item)"
                   >

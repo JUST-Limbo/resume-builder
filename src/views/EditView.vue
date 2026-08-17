@@ -45,7 +45,13 @@ import {
   type AutoFitResult,
   type ResumeStyles,
 } from '../types/resume'
-import { exportResumePdf, exportResumePdfViaLocalServer, ExportServerUnavailableError, openResumePrintDialog } from '../utils/exportResumePdf'
+import {
+  canUseLocalExportServer,
+  exportResumePdf,
+  exportResumePdfViaLocalServer,
+  ExportServerUnavailableError,
+  openResumePrintDialog,
+} from '../utils/exportResumePdf'
 import { exportTextFile, toSafeFilename } from '../utils/download'
 
 const MonacoEditor = defineAsyncComponent(() => import('../components/MonacoEditor.vue'))
@@ -57,6 +63,7 @@ const props = defineProps<{ id?: string }>()
 
 const router = useRouter()
 const store = useResumeStore()
+const localExportAvailable = canUseLocalExportServer()
 const hasResumeId = computed(() => typeof props.id === 'string' && props.id.length > 0)
 const styleDrawerOpen = ref(true)
 const cssEditorOpen = ref(false)
@@ -692,7 +699,11 @@ onBeforeUnmount(() => {
               <FileText :size="14" />
               Markdown（.md）
             </DropdownMenuItem>
-            <DropdownMenuItem :disabled="exportingPdf || printingPdf" @select="exportPdfVectorLocal">
+            <DropdownMenuItem
+              v-if="localExportAvailable"
+              :disabled="exportingPdf || printingPdf"
+              @select="exportPdfVectorLocal"
+            >
               <Download :size="14" />
               PDF（矢量 · 本机服务）
             </DropdownMenuItem>
@@ -754,7 +765,11 @@ onBeforeUnmount(() => {
               <FileText :size="14" />
               Markdown（.md）
             </DropdownMenuItem>
-            <DropdownMenuItem :disabled="exportingPdf || printingPdf" @select="exportPdfVectorLocal">
+            <DropdownMenuItem
+              v-if="localExportAvailable"
+              :disabled="exportingPdf || printingPdf"
+              @select="exportPdfVectorLocal"
+            >
               <Download :size="14" />
               PDF（矢量 · 本机服务）
             </DropdownMenuItem>

@@ -16,6 +16,20 @@ import { snapResumeSectionRules } from './resumeDocumentStyles'
 export const EXPORT_SERVER_BASE_URL = 'http://127.0.0.1:3917'
 
 /**
+ * 本机导出服务只允许由本机 HTTP 页面访问。
+ *
+ * 用例：
+ * - http://localhost:5173 → true
+ * - http://127.0.0.1:4173 → true
+ * - https://just-limbo.github.io/resume-builder/ → false
+ */
+export const canUseLocalExportServer = () => {
+  const hostname = window.location.hostname
+  const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1'
+  return window.location.protocol === 'http:' && isLocalhost
+}
+
+/**
  * 导出 / 打印另存用的建议文件名（无扩展名）：来自简历标题并去掉非法字符。
  *
  * 用例：
